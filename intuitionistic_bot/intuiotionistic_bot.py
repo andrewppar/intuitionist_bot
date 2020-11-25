@@ -2,11 +2,11 @@ import tweepy
 import formula_parser
 import subprocess
 
-consumer_key = "voB62BfaL1HmxeX3WB4B1trbS"
-consumer_secret = "LncVSXgm8TKDXio9mhBhXtvjhr9iZkjwiPV6fq7E2JUviuHj3k"
+consumer_key = "XXXXXXXXXXXXXXXXXXXXXXXXX"
+consumer_secret = "XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX"
 
-access_token = "879000066945667072-Tt1SPFpiaWkGtPwXbWu0uwru9mLOabq"
-access_token_secret = "ex0PFRbbcKFDaLHhOcYG908cHPhyuGfhS44DagRz4UPfd"
+access_token = "XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX"
+access_token_secret = "XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX"
 
 
 auth = tweepy.OAuthHandler(consumer_key, consumer_secret)
@@ -17,11 +17,11 @@ api = tweepy.API(auth)
 mathslogicbot_id = '2871456406'
 
 def get_timeline(user_id):
-  return tweepy.Cursor(
-    api.user_timeline,
-    user_id = user_id,
-    tweet_mode='extended',
-  ).items()
+    return tweepy.Cursor(
+      api.user_timeline,
+      user_id = user_id,
+      tweet_mode='extended',
+     ).items()
 
 parser = formula_parser.FormulaParser()
 
