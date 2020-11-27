@@ -23,7 +23,7 @@ class Connective(Enum):
     Implication = "Implies"
     Conjunction = "And"
     Disjunction = "Or"
-    BiImplication = "Equiv"
+    BiImplication = "Equivalent"
 
 
 class Formula:
@@ -130,7 +130,7 @@ class BiImplication(BinaryFormula):
         self.connective = Connective.BiImplication
 
     def __str__(self) -> str:
-        return f"(Equiv {self.left} {self.right})"
+        return f"(Equivalent {self.left} {self.right})"
 
     def __eq__(self, formula) -> bool:
         if not isinstance(formula, BiImplication):
@@ -232,7 +232,6 @@ class FormulaParser:
                 paren_depth -= 1
             else:
                 continue
-        # print(f"get_main_connective_index_result: {connective_index}")
         return connective_index
 
 
