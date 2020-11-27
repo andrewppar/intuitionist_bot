@@ -44,3 +44,12 @@ You can run the code usinng:
 
     python intuitionist_bot/intuitionist_bot/intuitionist_bot.py
 
+*NOTE:* The Main file in this repo is compiled to run on Ubuntu. You can check if it runs on your system by calling: 
+
+    ./intuitionist_bot/Main '(AtomicFormula "p")'
+
+The result should be 
+   
+    CounterExample
+
+If this doesn't happen you may have to recompile that file. Checkout the s4 branch of the modal theorem prover and follow the directions there. 
