@@ -1,5 +1,5 @@
 import tweepy
-import formula_parser
+from .formula_parser import FormulaParser
 import subprocess
 import json
 import logging
@@ -47,7 +47,7 @@ class IntuitionisticBot:
 
         Returns:
         """
-        with open("config.json") as config_file:
+        with open("./intuitionistic_bot/config.json") as config_file:
             config = json.load(config_file)
             self.consumer_key = config["consumer_key"]
             self.consumer_secret = config["consumer_secret"]
