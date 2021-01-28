@@ -1,5 +1,6 @@
 import tweepy
-from .formula_parser import FormulaParser
+import os 
+from formula_parser import FormulaParser
 import subprocess
 import json
 import logging
@@ -28,14 +29,15 @@ class IntuitionisticBot:
         """
 
     def __init__(self):
-        self.mathslogic_bot_id = "2871456406"
+        self.mathslogic_bot_id = "2871456406" 
+        self.repo_path = "/home/andrew/Documents/python/intuitionist_bot/"
         self.consumer_key: str = ""
         self.consumer_secret: str = ""
         self.access_token: str = ""
         self.access_token_secret: str = ""
         self.set_config()
         self.api = self.authorize()
-        self.parser = formula_parser.FormulaParser()
+        self.parser = FormulaParser()
 
     def set_config(self) -> None:
         """This function sets the consumer key,
@@ -46,8 +48,9 @@ class IntuitionisticBot:
         Args:
 
         Returns:
-        """
-        with open("./intuitionistic_bot/config.json") as config_file:
+        """ 
+        config_path = os.path.join(self.repo_path, "intuitionistic_bot/config.json") 
+        with open(config_path) as config_file:
             config = json.load(config_file)
             self.consumer_key = config["consumer_key"]
             self.consumer_secret = config["consumer_secret"]
@@ -105,16 +108,32 @@ class IntuitionisticBot:
 
         Returns:
         """
-        tweet = self.logicbot_timeline().next()
-        self.check_tweet(tweet.full_text)
+        tweet_log = os.path.join(self.repo_path, "tweet_log")
 
-    def check_tweet(self, tweet: str) -> None:
+        if not os.path.exists(tweet_log):
+            previous_tweet = "" 
+        else:
+            with open(tweet_log, 'r+') as previous_tweet_log:
+                previous_tweet = previous_tweet_log.read()
+
+        tweet = self.logicbot_timeline().next()
+        if tweet.full_text == previous_tweet: 
+            logging.info(f"{tweet.full_text} is the same as previous {previous_tweet}")
+            print(f"{tweet.full_text} is the same as previous {previous_tweet}")
+        else:
+            self.check_tweet(tweet.full_text, tweet.id)
+            with open(tweet_log, 'w+') as previous_tweet_log:
+                previous_tweet_log.write(tweet.full_text)
+
+    def check_tweet(self, tweet: str, tweet_id: str) -> None:
         """Checks whether a string represents an instance
         of an intuitionistic tautology. As a side effect it
         both prints and logs the formula, the parsed formula
         and whether or not it is a tautology.
 
-        Args:
+        Args: 
+            tweet: The text of the tweet that is being checked
+            tweet_id: the id of the tweet that is being checked
 
         Returns:
         """
@@ -123,9 +142,10 @@ class IntuitionisticBot:
         parsed_formula = str(self.parser.parse(tweet))
         print(parsed_formula)
         logging.info(f"Translation: {parsed_formula}")
-        proved = subprocess.check_output(["./Main", parsed_formula])
-        print(proved)
-        logging.info(f"Result: {proved.decode('utf-8')}")
+        proved_byte = subprocess.check_output(["/home/andrew/.local/bin/IntuitionisticTheoremProver-exe", parsed_formula])
+        proved = proved_byte.decode('utf-8') 
+        print(proved) 
+        logging.info(f"{tweet} {proved}")
 
 
 class MyStreamListener(tweepy.StreamListener):
@@ -140,14 +160,15 @@ class MyStreamListener(tweepy.StreamListener):
 
     def on_status(self, tweet):
         if tweet._json['user']['id'] == int(self.id):
-            tweet_text = tweet.text
-            self.bot.check_tweet(tweet_text)
+            tweet_text = tweet.text 
+            tweet_id = tweet.id
+            self.bot.check_tweet(tweet_text, tweet_id)
 
 
 if __name__ == '__main__':
-    logging.basicConfig(filename='intuitionistic_bot.log',
+    logging.basicConfig(filename='/home/andrew/Documents/python/intuitionist_bot/intuitionistic_bot.log', # noqa
                         filemode='a',
                         format='[%(asctime)s] %(message)s',
                         level=logging.INFO)
     bot = IntuitionisticBot()
-    bot.listen()
+    bot.check_previous_tweet()
