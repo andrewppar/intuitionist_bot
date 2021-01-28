@@ -42,7 +42,7 @@ You'll need to set up the config. It should look something like this:
 
 You can run the code usinng: 
 
-    python intuitionist_bot/intuitionist_bot/intuitionist_bot.py
+    python intuitionist_bot/intuitionist_bot.py
 
 *NOTE:* The Main file in this repo is compiled to run on Ubuntu. You can check if it runs on your system by calling: 
 
@@ -53,3 +53,9 @@ The result should be
     CounterExample
 
 If this doesn't happen you may have to recompile that file. Checkout the s4 branch of the modal theorem prover and follow the directions there. 
+
+# Testing 
+
+The tests can be run using 
+
+	make test 
