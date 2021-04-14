@@ -1,9 +1,9 @@
 import tweepy
-import os 
-from formula_parser import FormulaParser
+import os
 import subprocess
 import json
 import logging
+from intuitionistic_bot import FormulaParser
 
 
 class IntuitionisticBot:
@@ -29,7 +29,7 @@ class IntuitionisticBot:
         """
 
     def __init__(self):
-        self.mathslogic_bot_id = "2871456406" 
+        self.mathslogic_bot_id = "2871456406"
         self.repo_path = "/home/andrew/Documents/python/intuitionist_bot/"
         self.consumer_key: str = ""
         self.consumer_secret: str = ""
@@ -48,8 +48,8 @@ class IntuitionisticBot:
         Args:
 
         Returns:
-        """ 
-        config_path = os.path.join(self.repo_path, "intuitionistic_bot/config.json") 
+        """
+        config_path = os.path.join(self.repo_path, "intuitionistic_bot/config.json")
         with open(config_path) as config_file:
             config = json.load(config_file)
             self.consumer_key = config["consumer_key"]
@@ -111,15 +111,17 @@ class IntuitionisticBot:
         tweet_log = os.path.join(self.repo_path, "tweet_log")
 
         if not os.path.exists(tweet_log):
-            previous_tweet = "" 
+            previous_tweet = ""
         else:
             with open(tweet_log, 'r+') as previous_tweet_log:
                 previous_tweet = previous_tweet_log.read()
 
         tweet = self.logicbot_timeline().next()
-        if tweet.full_text == previous_tweet: 
-            logging.info(f"{tweet.full_text} is the same as previous {previous_tweet}")
-            print(f"{tweet.full_text} is the same as previous {previous_tweet}")
+        if tweet.full_text == previous_tweet:
+            logging.info(f"{tweet.full_text} is the same as "
+                         "previous {previous_tweet}")
+            print(f"{tweet.full_text} is the same "
+                  "as previous {previous_tweet}")
         else:
             self.check_tweet(tweet.full_text, tweet.id)
             with open(tweet_log, 'w+') as previous_tweet_log:
@@ -131,7 +133,7 @@ class IntuitionisticBot:
         both prints and logs the formula, the parsed formula
         and whether or not it is a tautology.
 
-        Args: 
+        Args:
             tweet: The text of the tweet that is being checked
             tweet_id: the id of the tweet that is being checked
 
@@ -142,9 +144,13 @@ class IntuitionisticBot:
         parsed_formula = str(self.parser.parse(tweet))
         print(parsed_formula)
         logging.info(f"Translation: {parsed_formula}")
-        proved_byte = subprocess.check_output(["/home/andrew/.local/bin/IntuitionisticTheoremProver-exe", parsed_formula])
-        proved = proved_byte.decode('utf-8') 
-        print(proved) 
+        proved_byte = subprocess.check_output(
+            [
+                "/home/andrew/.local/bin/IntuitionisticTheoremProver-exe",
+                parsed_formula
+             ])
+        proved = proved_byte.decode('utf-8')
+        print(proved)
         logging.info(f"{tweet} {proved}")
 
 
@@ -160,13 +166,13 @@ class MyStreamListener(tweepy.StreamListener):
 
     def on_status(self, tweet):
         if tweet._json['user']['id'] == int(self.id):
-            tweet_text = tweet.text 
+            tweet_text = tweet.text
             tweet_id = tweet.id
             self.bot.check_tweet(tweet_text, tweet_id)
 
 
 if __name__ == '__main__':
-    logging.basicConfig(filename='/home/andrew/Documents/python/intuitionist_bot/intuitionistic_bot.log', # noqa
+    logging.basicConfig(filename='/home/andrew/Documents/python/intuitionist_bot/intuitionistic_bot.log',  # noqa
                         filemode='a',
                         format='[%(asctime)s] %(message)s',
                         level=logging.INFO)
