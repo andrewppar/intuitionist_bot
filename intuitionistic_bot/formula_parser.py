@@ -22,8 +22,6 @@ class Connective(Enum):
     Implication = "Implies"
     Conjunction = "And"
     Disjunction = "Or"
-
-
     BiImplication = "Equivalent"
 
 
@@ -329,16 +327,3 @@ class FormulaParser:
             else:
                 continue
         return connective_index
-
-
-# formulas = ["¬¬((¬¬¬a⇾a)∨¬a)",
-#             "¬¬((¬¬¬a⇿¬a)∨a)",
-#             "¬¬((¬¬¬a∧¬a)∨a)",
-#             "(¬¬¬a∧¬a)∨a",
-#             "¬¬¬a∧¬a",
-#             ]
-#
-# parser = FormulaParser()
-# for formula in formulas:
-#     print(formula)
-#     print(parser.parse(formula))
