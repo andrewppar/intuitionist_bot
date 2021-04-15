@@ -49,7 +49,8 @@ class IntuitionisticBot:
 
         Returns:
         """
-        config_path = os.path.join(self.repo_path, "intuitionistic_bot/config.json")
+        config_path = os.path.join(self.repo_path,
+                                   "intuitionistic_bot/config.json")
         with open(config_path) as config_file:
             config = json.load(config_file)
             self.consumer_key = config["consumer_key"]
@@ -139,19 +140,27 @@ class IntuitionisticBot:
 
         Returns:
         """
-        print(tweet)
         logging.info(f"New Formula: {tweet}")
         parsed_formula = str(self.parser.parse(tweet))
-        print(parsed_formula)
         logging.info(f"Translation: {parsed_formula}")
         proved_byte = subprocess.check_output(
-            [
-                "/home/andrew/.local/bin/IntuitionisticTheoremProver-exe",
-                parsed_formula
-             ])
+            ["/home/andrew/.local/bin/IntuitionisticTheoremProver-exe",
+             parsed_formula]
+        )
         proved = proved_byte.decode('utf-8')
-        print(proved)
+        self.reply_to_tweet(tweet_id, f"{tweet} {proved}")
         logging.info(f"{tweet} {proved}")
+
+    def reply_to_tweet(self, tweet_id, reply):
+        """
+        Reply to a tweet.
+        Return the reply's tweet object.
+        """
+        return self.api.update_status(
+                                 status=reply,
+                                 in_reply_to_status_id=tweet_id,
+                                 auto_populate_reply_metadata=True
+                                )
 
 
 class MyStreamListener(tweepy.StreamListener):
