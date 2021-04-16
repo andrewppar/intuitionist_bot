@@ -5,6 +5,19 @@ import json
 import logging
 from intuitionistic_bot import FormulaParser
 
+log_path = '/Users/andrew/Documents/python/intuitionistic_bot/intuitionistic_bot.log'  # noqa
+
+if not os.path.exists(log_path):
+    with open(log_path, 'w+') as log:
+        log.write("")
+
+logging.basicConfig(
+    filename=log_path,
+    filemode='a+',
+    format='[%(asctime)s] %(message)s',
+    level=logging.INFO
+)
+
 
 class IntuitionisticBot:
     """The class that tweets replies to mathslogicbot
@@ -28,13 +41,18 @@ class IntuitionisticBot:
             mathslogicbot.
         """
 
-    def __init__(self):
+    def __init__(self, config_path):
         self.mathslogic_bot_id = "2871456406"
-        self.repo_path = "/home/andrew/Documents/python/intuitionist_bot/"
+        self.config_path = config_path
+        # TODO:
+        # Use Optional[str] because None is a
+        # better default than ""
         self.consumer_key: str = ""
         self.consumer_secret: str = ""
         self.access_token: str = ""
         self.access_token_secret: str = ""
+        self.tweet_log_path: str = ""
+        self.prover_path: str = ""
         self.set_config()
         self.api = self.authorize()
         self.parser = FormulaParser()
@@ -49,14 +67,17 @@ class IntuitionisticBot:
 
         Returns:
         """
-        config_path = os.path.join(self.repo_path,
-                                   "intuitionistic_bot/config.json")
-        with open(config_path) as config_file:
+        print(self.config_path)
+        with open(self.config_path) as config_file:
+            # TODO: Create an Enum to store the
+            # possible config values
             config = json.load(config_file)
             self.consumer_key = config["consumer_key"]
             self.consumer_secret = config["consumer_secret"]
             self.access_token = config["access_token"]
             self.access_token_secret = config["access_token_secret"]
+            self.tweet_log_path = config["tweet_log_path"]
+            self.prover_path = config["prover_path"]
 
     def authorize(self) -> tweepy.API:
         """This generates a tweepy.API from the
@@ -109,7 +130,7 @@ class IntuitionisticBot:
 
         Returns:
         """
-        tweet_log = os.path.join(self.repo_path, "tweet_log")
+        tweet_log = self.tweet_log_path
 
         if not os.path.exists(tweet_log):
             previous_tweet = ""
@@ -144,8 +165,7 @@ class IntuitionisticBot:
         parsed_formula = str(self.parser.parse(tweet))
         logging.info(f"Translation: {parsed_formula}")
         proved_byte = subprocess.check_output(
-            ["/home/andrew/.local/bin/IntuitionisticTheoremProver-exe",
-             parsed_formula]
+            [self.prover_path, parsed_formula]
         )
         proved = proved_byte.decode('utf-8')
         self.reply_to_tweet(tweet_id, f"{tweet} {proved}")
@@ -181,9 +201,5 @@ class MyStreamListener(tweepy.StreamListener):
 
 
 if __name__ == '__main__':
-    logging.basicConfig(filename='/home/andrew/Documents/python/intuitionist_bot/intuitionistic_bot.log',  # noqa
-                        filemode='a',
-                        format='[%(asctime)s] %(message)s',
-                        level=logging.INFO)
     bot = IntuitionisticBot()
     bot.check_previous_tweet()
